@@ -63,6 +63,16 @@ impl ResolverConfig {
         }
     }
 
+
+    pub fn aliyun() -> Self {
+        ResolverConfig {
+            // TODO: this should get the hostname and use the basename as the default
+            domain: None,
+            search: vec![],
+            name_servers: NameServerConfigGroup::aliyun(),
+        }
+    }
+
     /// Creates a default configuration, using `1.1.1.1`, `1.0.0.1` and `2606:4700:4700::1111`, `2606:4700:4700::1001` (thank you, Cloudflare).
     ///
     /// Please see: https://www.cloudflare.com/dns/
@@ -228,8 +238,9 @@ impl Default for ResolverConfig {
     /// Creates a default configuration, using `8.8.8.8`, `8.8.4.4` and `2001:4860:4860::8888`, `2001:4860:4860::8844` (thank you, Google).
     ///
     /// Please see Google's [privacy statement](https://developers.google.com/speed/public-dns/privacy) for important information about what they track, many ISP's track similar information in DNS. To use the system configuration see: `Resolver::from_system_conf` and `AsyncResolver::from_system_conf`
+    // fn default() -> Self { ResolverConfig::google() }
     fn default() -> Self {
-        ResolverConfig::google()
+        ResolverConfig::aliyun()
     }
 }
 
@@ -514,6 +525,10 @@ impl NameServerConfigGroup {
         Self::from_ips_clear(GOOGLE_IPS, 53, true)
     }
 
+    pub fn aliyun() -> Self {
+        Self::from_ips_clear(ALIYUN_IPS, 53, true)
+    }
+
     /// Creates a default configuration, using `8.8.8.8`, `8.8.4.4` and `2001:4860:4860::8888`, `2001:4860:4860::8844` (thank you, Google). This limits the registered connections to just HTTPS lookups
     ///
     /// Please see Google's [privacy statement](https://developers.google.com/speed/public-dns/privacy) for important information about what they track, many ISP's track similar information in DNS. To use the system configuration see: `Resolver::from_system_conf` and `AsyncResolver::from_system_conf`
@@ -745,6 +760,13 @@ pub const GOOGLE_IPS: &[IpAddr] = &[
     IpAddr::V4(Ipv4Addr::new(8, 8, 4, 4)),
     IpAddr::V6(Ipv6Addr::new(0x2001, 0x4860, 0x4860, 0, 0, 0, 0, 0x8888)),
     IpAddr::V6(Ipv6Addr::new(0x2001, 0x4860, 0x4860, 0, 0, 0, 0, 0x8844)),
+];
+
+pub const ALIYUN_IPS: &[IpAddr] = &[
+    IpAddr::V4(Ipv4Addr::new(223, 5, 5, 5)),
+    IpAddr::V4(Ipv4Addr::new(223, 6, 6, 6)),
+    IpAddr::V6(Ipv6Addr::new(0x2400, 0x3200, 0, 0, 0, 0, 0, 0x1)),
+    IpAddr::V6(Ipv6Addr::new(0x2400, 0x3200, 0, 0, 0, 0, 0xbaba, 0x1)),
 ];
 
 /// IP addresses for Cloudflare's 1.1.1.1 DNS service
